@@ -1,10 +1,10 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as MongooseSchema } from 'mongoose';
-import { uuid, uuidV2 } from '../helper/uuid.helper';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Document, Schema as MongooseSchema } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 
 @Schema({ timestamps: true })
 export class RequestLog extends Document {
-  @Prop({ type: String, default: () => uuidV2() })
+  @Prop({ type: String, default: () => uuidv4() })
   // @ts-ignore
   _id: string;
 

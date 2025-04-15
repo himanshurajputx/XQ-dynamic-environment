@@ -22,10 +22,30 @@ async function fetchConfigurations() {
 
     const configs = await collection.find({}).toArray();
 
-    return configs.map((config) => ({
-      key: config.key,
-      value: config.value,
-    }));
+    // return configs.map((config) => ({
+    //   key: config.key,
+    //   value: config.value,
+    // }));
+    return configs.flatMap((config) => {
+      const key = config.key;
+      const value = config.value;
+
+      if (typeof value === 'object' && value !== null) {
+        // If nested object like SMTP config
+        const mappedEntries = [];
+
+        if (value.host) mappedEntries.push({ key: `${key}_HOST`, value: value.host });
+        if (value.port) mappedEntries.push({ key: `${key}_PORT`, value: value.port });
+        if (value.secure !== undefined) mappedEntries.push({ key: `${key}_SECURE`, value: value.secure });
+        if (value.auth?.user) mappedEntries.push({ key: `${key}_USER`, value: value.auth.user });
+        if (value.auth?.pass) mappedEntries.push({ key: `${key}_PASS`, value: value.auth.pass });
+
+        return mappedEntries;
+      }
+
+      // Simple key=value
+      return [{ key, value }];
+    });
   } catch (error) {
     console.error('❌ Error fetching configurations:', error);
     return [];
@@ -58,3 +78,6 @@ fetchConfigurations().then((configs) => {
   console.log(" ✅ Environment loaded successfully");
 
 });
+
+
+

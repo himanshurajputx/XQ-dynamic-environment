@@ -1,6 +1,6 @@
-import * as dotenv from 'dotenv';
-import * as fs from 'fs';
-import * as Joi from '@hapi/joi';
+import * as dotenv from "dotenv";
+import * as fs from "fs";
+import * as Joi from "@hapi/joi";
 
 type EnvConfig = {
   [key: string]: string;
@@ -15,7 +15,7 @@ export class ConfigService {
   }
   private validateInput(envConfig: EnvConfig): EnvConfig {
     const envVarSchema: Joi.ObjectSchema = Joi.object({
-      NODE_ENV: Joi.string().valid('development', 'production', 'test'),
+      NODE_ENV: Joi.string().valid("development", "production", "test"),
       // .default('dev'),
       MONGO_URL: Joi.string(),
       PORT: Joi.number(),
@@ -30,6 +30,12 @@ export class ConfigService {
       TWILIO_PHONE_NUMBER: Joi.string(),
       AWS_S3_BUCKET: Joi.string(),
       AWS_ACCESS_KEY: Joi.string(),
+      EMAIL_SMTP1_HOST: Joi.string(),
+      EMAIL_SMTP1_PORT: Joi.string(),
+      EMAIL_SMTP1_SECURE: Joi.string(),
+      EMAIL_SMTP1_USER: Joi.string(),
+      EMAIL_SMTP1_PASS: Joi.string(),
+      STRIPE_SECRET_KEY: Joi.any(),
     });
 
     let error: Joi.ValidationError | undefined, validatedEnvConfig: any;

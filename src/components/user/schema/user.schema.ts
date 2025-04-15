@@ -1,20 +1,26 @@
-import * as mongoose from 'mongoose';
-import { hashGenerate, uuid } from '../../../shared';
+import * as mongoose from "mongoose";
+import { hashGenerate } from "../../../shared";
+import { v4 as uuidv4 } from "uuid";
 
 export const UsersSchema = new mongoose.Schema({
   _id: {
     type: String,
     index: true,
-    default: () => uuid(),
+    default: () => uuidv4(),
   },
   first_name: {
     type: String,
-    default: '',
+    default: "",
     lowercase: true,
   },
   last_name: {
     type: String,
-    default: '',
+    default: "",
+    lowercase: true,
+  },
+  organization_name: {
+    type: String,
+    default: "",
     lowercase: true,
   },
   email: {
@@ -26,7 +32,7 @@ export const UsersSchema = new mongoose.Schema({
   },
   phone_number: {
     type: String,
-    default: '',
+    default: "",
     index: true,
   },
   status: {
@@ -34,14 +40,15 @@ export const UsersSchema = new mongoose.Schema({
     default: true,
     index: true,
   },
-  userType: {
+  user_type: {
     type: String,
-    enum: ['user', 'partner', 'master'],
-    default: 'user',
+    index: true,
+    enum: ["user", "partner", "master"],
+    default: "user",
   },
   parent_id: {
     type: String,
-    default: '',
+    default: "",
   },
   profile: {
     type: String,
@@ -49,19 +56,20 @@ export const UsersSchema = new mongoose.Schema({
   },
   gender: {
     type: String,
-    enum: ['male', 'female', 'others', 'N/A'],
-    default: 'N/A',
+    enum: ["male", "female", "others", "N/A"],
+    default: "N/A",
   },
   address: {},
   salt: String,
   password: String,
+  created_by: String,
   created_at: { type: Number, default: () => Math.floor(Date.now() / 1000) },
   update_at: { type: Number, default: () => Math.floor(Date.now() / 1000) },
   delete_at: { type: Number, default: () => Math.floor(Date.now() / 1000) },
 });
 
 //schema middleware to apply before saving
-UsersSchema.pre('save', async function (next) {
+UsersSchema.pre("save", async function (next) {
   // @ts-ignore
   const { hash, salt } = await hashGenerate(this.password, 16);
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -71,26 +79,26 @@ UsersSchema.pre('save', async function (next) {
   next();
 });
 
-UsersSchema.pre('updateOne', async function (next) {
+UsersSchema.pre("updateOne", async function (next) {
   const data = this.getUpdate();
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  const { hash, salt } = await hashGenerate(data['$set']['password'], 16);
+  const { hash, salt } = await hashGenerate(data["$set"]["password"], 16);
   if (data) {
     this.set({
       password: hash,
       salt: salt,
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      passwordReset: data['$set']['passwordReset'],
+      passwordReset: data["$set"]["passwordReset"],
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      email_verify: data['$set']['email_verify'],
+      email_verify: data["$set"]["email_verify"],
       update_at: Math.floor(Date.now() / 1000),
     });
   }
   next();
 });
 
-UsersSchema.pre('insertMany', async function (next, users) {
+UsersSchema.pre("insertMany", async function (next, users) {
   if (Array.isArray(users) && users.length > 0) {
     const hashedUsers = users.map(async (user) => {
       // eslint-disable-next-line @typescript-eslint/no-misused-promises,no-async-promise-executor
@@ -109,15 +117,15 @@ UsersSchema.pre('insertMany', async function (next, users) {
     });
     await Promise.all(hashedUsers);
     next();
-  } else return next(new Error('User list should not be empty'));
+  } else return next(new Error("User list should not be empty"));
 });
 
-UsersSchema.post('save', function (error, doc, next) {
+UsersSchema.post("save", function (error, doc, next) {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  if (error.name === 'MongoServerError' && error.code === 11000) {
+  if (error.name === "MongoServerError" && error.code === 11000) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     next({
-      message: 'Duplicate key error: A record with this ID already exists. ',
+      message: "Duplicate key error: A record with this ID already exists. ",
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
       key: error.keyPattern,
     });
@@ -128,8 +136,8 @@ UsersSchema.post('save', function (error, doc, next) {
   }
 });
 
-UsersSchema.post('aggregate', function (result) {
+UsersSchema.post("aggregate", function (result) {
   // prints returned documents
-  console.log('find() returned ' + JSON.stringify(result));
+  console.log("find() returned " + JSON.stringify(result));
   // prints number of milliseconds the query took
 });

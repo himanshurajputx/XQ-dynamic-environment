@@ -21,6 +21,7 @@
     "build-prod": "export NODE_ENV=production && node setup/createEnvironment.js && node setup/initEnvironment.js && webpack --config webpack.config.js --watch"
   },
   "dependencies": {
+    "@nestjs-modules/mailer": "^2.0.2",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
@@ -37,9 +38,15 @@
     "express-session": "^1.18.1",
     "helmet": "^8.1.0",
     "mongoose": "^8.13.1",
+    "nest-winston": "^1.10.2",
+    "nodemailer": "^6.10.0",
     "ora": "^8.2.0",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "stripe": "^18.0.0",
+    "uuid": "^11.1.0",
+    "winston": "^3.17.0",
+    "winston-daily-rotate-file": "^5.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
@@ -58,6 +65,7 @@
     "@types/hapi__joi": "^17.1.15",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.10.7",
+    "@types/nodemailer": "^6.4.17",
     "@types/supertest": "^6.0.2",
     "dotenv": "^16.4.7",
     "eslint": "^9.18.0",

@@ -1,10 +1,16 @@
-import { NestFactory } from '@nestjs/core';
-import { setup } from './setup';
-import { AppModule } from './app.module';
+import { NestFactory } from "@nestjs/core";
+import { setup } from "./setup";
+import { AppModule } from "./app.module";
+import { ConsoleLogger } from "@nestjs/common";
 declare const module: any;
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: new ConsoleLogger({
+      json: true,
+      colors: true,
+    }),
+  });
   setup(app);
   await app.listen(process.env.PORT ?? 3000);
 

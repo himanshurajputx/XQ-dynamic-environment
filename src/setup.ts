@@ -4,26 +4,24 @@ import {
   INestApplication,
   Logger,
   VersioningType,
-} from '@nestjs/common';
-import { useContainer } from 'class-validator';
-import * as cookieParser from 'cookie-parser';
-import * as compression from 'compression';
-import helmet from 'helmet';
-import { AppModule } from './app.module';
-import { ConfigService, ResponseInterceptor } from './shared';
-import { DatabaseErrorInterceptor } from './shared/interceptor/database-error.interceptor';
-import { ExceptionInterceptor } from './shared/interceptor/exception.interceptor';
+} from "@nestjs/common";
+import { useContainer } from "class-validator";
+import * as cookieParser from "cookie-parser";
+import * as compression from "compression";
+import helmet from "helmet";
+import { AppModule } from "./app.module";
+import { ConfigService, ResponseInterceptor } from "./shared";
 
 export function setup(app: INestApplication): INestApplication {
-  const logger = new Logger('Application Setup');
+  const logger = new Logger("Application Setup");
 
   try {
     // 1️⃣ Get configuration service
     const configService = app.get(ConfigService);
-    const appSecret = configService.get('APP_SECRET');
+    const appSecret = configService.get("APP_SECRET");
 
     if (!appSecret) {
-      throw new Error('APP_SECRET is not defined in environment variables');
+      throw new Error("APP_SECRET is not defined in environment variables");
     }
 
     // 2️⃣ Enable security middlewares
@@ -34,8 +32,8 @@ export function setup(app: INestApplication): INestApplication {
             defaultSrc: ["'self'"],
             scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
             styleSrc: ["'self'", "'unsafe-inline'"],
-            imgSrc: ["'self'", 'data:', 'validator.swagger.io'],
-            connectSrc: ["'self'", 'http://localhost:4200'],
+            imgSrc: ["'self'", "data:", "validator.swagger.io"],
+            connectSrc: ["'self'", "http://localhost:4200"],
           },
         },
         crossOriginEmbedderPolicy: false,
@@ -47,21 +45,21 @@ export function setup(app: INestApplication): INestApplication {
 
     // 3️⃣ CORS configuration
     const allowedOrigins = configService
-      .get('ALLOWED_ORIGINS')
+      .get("ALLOWED_ORIGINS")
       ?.split(/\s*,\s*/)
-      .filter(Boolean) || ['http://localhost:4200'];
+      .filter(Boolean) || ["http://localhost:4200"];
 
     app.enableCors({
       origin: (origin, callback) => {
         if (!origin || allowedOrigins.includes(origin)) {
           callback(null, true);
         } else {
-          callback(new Error('Not allowed by CORS'));
+          callback(new Error("Not allowed by CORS"));
         }
       },
-      methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+      methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
       credentials: true,
-      exposedHeaders: ['Authorization'],
+      exposedHeaders: ["Authorization"],
       maxAge: 86400, // 24 hours
     });
 
@@ -69,10 +67,10 @@ export function setup(app: INestApplication): INestApplication {
     app.useLogger(logger);
 
     // 5️⃣ Set global prefix and API versioning
-    app.setGlobalPrefix('api');
+    app.setGlobalPrefix("api");
     app.enableVersioning({
       type: VersioningType.HEADER,
-      header: 'Version',
+      header: "Version",
     });
 
     // 6️⃣ Global interceptors for error handling and response formatting
@@ -97,7 +95,7 @@ export function setup(app: INestApplication): INestApplication {
     // 8️⃣ Set up dependency injection for custom validators
     useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
-    logger.log('✅ Application setup completed successfully');
+    logger.log("✅ Application setup completed successfully");
     return app;
   } catch (error) {
     logger.error(

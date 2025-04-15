@@ -6,14 +6,17 @@ import {
   IsString,
   MaxLength,
   Matches,
-} from 'class-validator';
-import { IsUserAlreadyExist } from '../../../shared/validators/is-user-already-exist.validator';
+  IsEnum,
+  IsOptional,
+} from "class-validator";
+import { IsUserAlreadyExist } from "../../../shared";
+import { Type } from "./enum";
 
 export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   @Matches(/^[A-Za-z\s]+$/, {
-    message: 'Name must contain only alphabetic characters and spaces',
+    message: "Name must contain only alphabetic characters and spaces",
   })
   @MaxLength(50)
   @MinLength(2)
@@ -22,23 +25,36 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   @Matches(/^[A-Za-z\s]+$/, {
-    message: 'Last name must contain only alphabetic characters and spaces',
+    message: "Last name must contain only alphabetic characters and spaces",
   })
   @MaxLength(50)
   @MinLength(2)
   readonly last_name: string;
 
   @IsString()
-  @IsNotEmpty()
-  @Matches(/^[0-9\s]+$/, {
-    message: 'Phone number must contain only numeric characters and spaces',
+  @IsOptional()
+  @Matches(/^[A-Za-z0-1\s]*$/, {
+    message:
+      "Organization name must contain only alphabetic characters and spaces",
   })
   @MaxLength(50)
-  @MinLength(2)
+  readonly organization_name: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @Matches(/^[0-9\s]+$/, {
+    message: "Phone number must contain only numeric characters and spaces",
+  })
+  @MaxLength(50)
   readonly phone_number: string;
 
   @IsString()
   readonly profile: string;
+
+  @IsString()
+  @IsEnum(Type)
+  @IsNotEmpty()
+  readonly user_type: Type;
 
   @IsString()
   readonly gender: string;
@@ -57,7 +73,7 @@ export class CreateUserDto {
   @MinLength(6)
   @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
     message:
-      'Password must contain at least 1 uppercase letter, 1 lowercase letter, and either 1 number or special character',
+      "Password must contain at least 1 uppercase letter, 1 lowercase letter, and either 1 number or special character",
   })
   readonly password: string;
 }
