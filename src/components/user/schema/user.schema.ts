@@ -2,71 +2,73 @@ import * as mongoose from "mongoose";
 import { hashGenerate } from "../../../shared";
 import { v4 as uuidv4 } from "uuid";
 
-export const UsersSchema = new mongoose.Schema({
-  _id: {
-    type: String,
-    index: true,
-    default: () => uuidv4(),
+export const UsersSchema = new mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      index: true,
+      default: () => uuidv4(),
+    },
+    first_name: {
+      type: String,
+      default: "",
+      lowercase: true,
+    },
+    last_name: {
+      type: String,
+      default: "",
+      lowercase: true,
+    },
+    organization_name: {
+      type: String,
+      default: "",
+      lowercase: true,
+    },
+    email: {
+      type: String,
+      require: true,
+      unique: true,
+      lowercase: true,
+      index: true,
+    },
+    phone_number: {
+      type: String,
+      default: "",
+      index: true,
+    },
+    status: {
+      type: Boolean,
+      default: true,
+      index: true,
+    },
+    user_type: {
+      type: String,
+      index: true,
+      enum: ["user", "partner", "master"],
+      default: "user",
+    },
+    parent_id: {
+      type: String,
+      default: "",
+    },
+    profile: {
+      type: String,
+      default: null,
+    },
+    gender: {
+      type: String,
+      enum: ["male", "female", "others", "N/A"],
+      default: "N/A",
+    },
+    address: {},
+    salt: String,
+    password: String,
+    created_by: String,
   },
-  first_name: {
-    type: String,
-    default: "",
-    lowercase: true,
+  {
+    timestamps: true, // Automatically adds createdAt & updatedAt
   },
-  last_name: {
-    type: String,
-    default: "",
-    lowercase: true,
-  },
-  organization_name: {
-    type: String,
-    default: "",
-    lowercase: true,
-  },
-  email: {
-    type: String,
-    require: true,
-    unique: true,
-    lowercase: true,
-    index: true,
-  },
-  phone_number: {
-    type: String,
-    default: "",
-    index: true,
-  },
-  status: {
-    type: Boolean,
-    default: true,
-    index: true,
-  },
-  user_type: {
-    type: String,
-    index: true,
-    enum: ["user", "partner", "master"],
-    default: "user",
-  },
-  parent_id: {
-    type: String,
-    default: "",
-  },
-  profile: {
-    type: String,
-    default: null,
-  },
-  gender: {
-    type: String,
-    enum: ["male", "female", "others", "N/A"],
-    default: "N/A",
-  },
-  address: {},
-  salt: String,
-  password: String,
-  created_by: String,
-  created_at: { type: Number, default: () => Math.floor(Date.now() / 1000) },
-  update_at: { type: Number, default: () => Math.floor(Date.now() / 1000) },
-  delete_at: { type: Number, default: () => Math.floor(Date.now() / 1000) },
-});
+);
 
 //schema middleware to apply before saving
 UsersSchema.pre("save", async function (next) {

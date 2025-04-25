@@ -7,6 +7,7 @@ import {
   Post,
   Query,
   Req,
+  UseInterceptors,
   Version,
 } from "@nestjs/common";
 import { UserService } from "./user.service";
@@ -19,6 +20,8 @@ import {
 import { HydratedDocument, QueryWithHelpers } from "mongoose";
 import { IdDto } from "./dto/id.dto";
 import { Type } from "./dto/enum";
+import { PaginationInterceptor } from "../../shared/";
+import { PaginationQuery } from "../../shared/pagination/pagination-query.dto";
 
 @Controller("user")
 export class UserController {
@@ -64,8 +67,9 @@ export class UserController {
 
   @Get()
   @Version("1")
-  get(@Query("query") query?: object): Promise<User[]> {
-    return this.userService.getUser();
+  @UseInterceptors(PaginationInterceptor)
+  get(@Query() query: PaginationQuery, @Req() req: Request): Promise<[any[], number]> {
+    return this.userService.getUser(query, req["user"]);
   }
 
   @Get("/details/:id")

@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import Stripe from "stripe";
-const stripeSecretKey = "";
+const stripeSecretKey =
+  "sk_test_51QHLBNFaG7344N7WvqrZUet79h97LNKiGbVTHmlWEKTTaTxJlBY3lFmvywVicalg6crVfrPZtwJzWcqZVjxHs0Yp00yd7ksZkU";
 
 // @ts-ignore
 const stripe = new Stripe(stripeSecretKey, { apiVersion: "2022-11-15" }); // Ensure the API version is specified

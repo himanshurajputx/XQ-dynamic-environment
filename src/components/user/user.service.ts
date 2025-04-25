@@ -2,14 +2,11 @@ import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { TABLE_ } from "../../shared";
 import { HydratedDocument, Model, QueryWithHelpers } from "mongoose";
-import {
-  User,
-  UserDetailsResponseInterface,
-  UsersInterface,
-} from "./interfaces/user.interface";
+import { UsersInterface } from "./interfaces/user.interface";
 import { CreateUserDto } from "./dto/user.dto";
 import { IdDto } from "./dto/id.dto";
 import { Type } from "./dto/enum";
+import { PaginationQuery } from "../../shared/pagination/pagination-query.dto";
 
 @Injectable()
 export class UserService {
@@ -52,18 +49,69 @@ export class UserService {
     }
   }
 
-  getUser(): Promise<User[]> {
+  async getUser(
+    query?: PaginationQuery,
+    user?: object,
+  ): Promise<[any[], number]> {
     try {
-      return this.userModel.find(
-        {},
-        {
-          password: 0,
-          salt: 0,
-          parent_id: 0,
-          delete_at: 0,
-          __v: 0,
-        },
-      );
+      const { limit = 10, page = 1, sort, search, ...filters } = query ?? {};
+      const skip = (page - 1) * limit;
+      const mongoFilter: Record<string, any> = {
+        ...filters,
+        _id: { $ne: user?.["_id"] },
+      };
+
+      // Apply search (basic OR across fields)
+      if (search) {
+        mongoFilter["$or"] = [
+          {
+            $expr: {
+              $regexMatch: {
+                input: { $concat: ["$first_name", " ", "$last_name"] },
+                regex: search,
+                options: "i",
+              },
+            },
+          },
+          { email: { $regex: search, $options: "i" } },
+          { phone_number: { $regex: search, $options: "i" } },
+          { user_type: { $regex: search, $options: "i" } },
+          {
+            status:
+              search === "true" ? true : search === "false" ? false : undefined,
+          },
+        ];
+      }
+
+      // Apply sorting
+      let sortObj: Record<string, 1 | -1> = {};
+      if (sort) {
+        sort.split(",").forEach((field) => {
+          if (!field) return;
+          const direction = field.startsWith("-") ? -1 : 1;
+          const key = field.replace(/^-/, "");
+          sortObj[key] = direction;
+        });
+      } else {
+        sortObj = { createdAt: -1 }; // default sort
+      }
+
+      const [items, total] = await Promise.all([
+        this.userModel
+          .find(mongoFilter, {
+            password: 0,
+            salt: 0,
+            parent_id: 0,
+            delete_at: 0,
+            __v: 0,
+          })
+          .skip(skip)
+          .limit(limit)
+          .sort(sortObj),
+        this.userModel.countDocuments(mongoFilter),
+      ]);
+
+      return [items, total];
     } catch (e) {
       throw new BadRequestException(e);
     }

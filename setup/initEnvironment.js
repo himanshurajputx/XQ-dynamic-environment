@@ -7,6 +7,9 @@ async function fetchConfigurations() {
   const mongoURI = 'mongodb+srv://RFOneDB:UQGeGRsvmbqo1nsL@app-setting.gtnic6l.mongodb.net/?retryWrites=true&w=majority&appName=app-setting';
 
   try {
+
+    const env = process.env.NODE_ENV?.trim() || 'development';
+
     // Connect to MongoDB
     await mongoose.connect(mongoURI, { dbName: 'app_settings'});
 
@@ -20,7 +23,7 @@ async function fetchConfigurations() {
 
     const collection = db.collection('app_prefiin');
 
-    const configs = await collection.find({}).toArray();
+    const configs = await collection.find({"environment":  env}).toArray();
 
     // return configs.map((config) => ({
     //   key: config.key,

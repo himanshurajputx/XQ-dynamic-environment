@@ -26,3 +26,7 @@ export * from "./logger/logs.service";
 export * from "./logger/logs.module";
 export * from "./email/mail.service";
 export * from "./email/mail.module";
+export * from "./pagination/paginate";
+export * from "./pagination/pagination-link.dto";
+export * from "./pagination/pagination.dto";
+export * from "./interceptor/pagination.interceptor";

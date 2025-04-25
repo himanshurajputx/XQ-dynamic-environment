@@ -19,14 +19,16 @@ export class ProtectedRoutesMiddleware implements NestMiddleware {
       "/authentication/login",
       "/authentication/register",
       "/user/mx",
-        "api/app-settings"
+      "/api/app-settings",
+      "/lead/app-create",
+      "/health",
     ];
     const isOpenRoute = openRoutes.includes(req.path);
-
     if (isOpenRoute) {
       return next(); // Allow access without auth
     }
 
+    const cookiesToken = req.signedCookies?.token;
     const authHeader = req.headers["authorization"];
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       throw new UnauthorizedException(

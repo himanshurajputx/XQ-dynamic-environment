@@ -4,4 +4,6 @@ export const regex = {
   onlyNumbersWithPlusRegex: /^\+\d+$/, // just '+' followed by digits
   onlyNumberRegex: /^\d+$/, // just digits, no '+'
   onlyAllowedSpecialCharsRegex: /^[a-zA-Z0-9@+.\-]+$/, // allow only certain special characters
+  ONLY_ALLOWED_CHARACTERS_REGEX: /^[a-zA-Z0-9 ]*$/,
+  ONLY_NUMBERS_REGEX: /^[0-9]+$/
 };

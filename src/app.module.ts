@@ -37,6 +37,8 @@ export class AppModule implements NestModule {
         { path: "authentication/register", method: "POST" },
         { path: "user/mx", method: "POST" },
         { path: "api/app-settings", method: "POST" },
+        { path: "lead/app-create", method: "POST" },
+        { path: "health", method: "GET" },
       )
       .forRoutes(""); // apply middleware for all other routes
   }

@@ -1,38 +1,3 @@
-//
-// const webpack = require('webpack');
-// const path = require('path');
-// const nodeExternals = require('webpack-node-externals');
-// const { RunScriptWebpackPlugin } = require('run-script-webpack-plugin');
-//
-// module.exports = {
-//   entry: ['webpack/hot/poll?100', './src/main.ts'],
-//   target: 'node',
-//   externals: [
-//     nodeExternals({
-//       allowlist: ['webpack/hot/poll?100'],
-//     }),
-//   ],
-//   module: {
-//     rules: [
-//       {
-//         test: /.tsx?$/,
-//         use: 'ts-loader',
-//         exclude: /node_modules/,
-//       },
-//     ],
-//   },
-//   mode: 'development',
-//   resolve: {
-//     extensions: ['.tsx', '.ts', '.js'],
-//   },
-//   plugins: [new webpack.HotModuleReplacementPlugin(), new RunScriptWebpackPlugin({ name: 'server.js', autoRestart: false })],
-//   output: {
-//     path: path.join(__dirname, 'dist'),
-//     filename: 'server.js',
-//   },
-// };
-
-
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const webpack = require('webpack');
 
@@ -68,7 +33,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.tsx?$/,
+        test: /\.ts?$/,
         loader: 'ts-loader',
         options: {
           transpileOnly: true,
@@ -90,19 +55,33 @@ module.exports = {
     //   name: 'server.js',
     //   autoRestart: true,
     // }),
-    new CopyPlugin({
-      patterns: [
-        {
-          from: `./environment/${mode}.env`,
-          to: path.join(__dirname, 'build'),
-        },
-      ],
-    }),
+    // new CopyPlugin({
+    //   patterns: [
+    //     {
+    //       from: `./environment/${mode}.env`,
+    //       to: path.join(__dirname, 'build'),
+    //     },
+    //   ],
+    // }),
+    {
+      apply: (compiler) => {
+        compiler.hooks.done.tap('ExitAfterBuildPlugin', (stats) => {
+          if (isProduction) {
+            console.log('✔️ Production build completed!');
+            process.exit(0);
+          }
+        });
+      },
+    },
   ],
 
   output: {
-    path: path.join(__dirname, 'build'),
+    path: path.join(__dirname, 'dist'),
     filename: 'server.js',
   },
 };
 
+
+
+// mongodb://globalUser:StrongPassword123@localhost:27017/admin
+// mongodb://prefinn_2025_dev:role1AwOpLjHtTFFdd3087_dev10090@127.0.0.1:27017/prefinn_db_dev

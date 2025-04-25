@@ -21,7 +21,7 @@ export class AuthenticationController {
   async register(@Body() body: RegisterDto) {
     if (body["user_type"] == "master")
       throw new BadRequestException("Master is not allowed to register");
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
     const user = await this.auth.register(body);
 
     return {
@@ -36,7 +36,7 @@ export class AuthenticationController {
   async login(@Req() req: LoginDto, @Res() response: Response) {
     const token = await this.auth.login(req["credentials"]);
     response.setHeader("Authorization", `Bearer ${token}`);
-    response.cookie(token, {
+    response.cookie("token", token, {
       httpOnly: true,
       signed: true,
       sameSite: "strict",
