@@ -1,8 +1,4 @@
 #!/bin/bash
-
-
-
-# CONFIG
 SERVER_IP="147.93.96.111"
 USER="root"
 PASSWORD="8?VQA80SMEwSWzdD1Sc@"
@@ -10,7 +6,7 @@ APP_NAME="prefinn-app"
 ZIP_NAME="dist.zip"
 REMOTE_DIR="/root/node_server"
 LOCAL_BUILD_DIR="dist"
-DEPLOY_FILES=("dist" "package.json" "environment" )
+DEPLOY_FILES=("dist" "package.json" "environment")
 
 # 1. Build the NestJS app
 echo "🔨 Building the app..."

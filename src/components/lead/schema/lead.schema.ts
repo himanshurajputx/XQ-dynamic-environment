@@ -35,7 +35,14 @@ export const LeadSchema = new mongoose.Schema(
 
     employment_type: {
       type: String,
-      enum: ["salaried", "self-employed", "others"],
+      enum: [
+        "salaried",
+        "self-employed",
+        "others",
+        "retired",
+        "student",
+        "business",
+      ],
       default: "",
     },
     state: {
@@ -63,6 +70,10 @@ export const LeadSchema = new mongoose.Schema(
       default: "",
     },
     cibil_score: {
+      type: String,
+      default: "",
+    },
+    pan: {
       type: String,
       default: "",
     },
@@ -107,4 +118,3 @@ export const LeadSchema = new mongoose.Schema(
     timestamps: true, // Automatically adds createdAt & updatedAt
   },
 );
-

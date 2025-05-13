@@ -2,7 +2,7 @@ import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
 import {
   MongodbModule,
   ConfigModule,
-  ProtectedRoutesMiddleware,
+  // ProtectedRoutesMiddleware,
 } from "./shared/";
 import { ComponentsModule } from "./components/components.module";
 import {
@@ -12,7 +12,8 @@ import {
   CustomJwtModule,
 } from "./shared";
 import { UserModule } from "./components/user/user.module";
-
+import { ThrottlerModule, ThrottlerGuard } from "@nestjs/throttler";
+import { APP_GUARD } from "@nestjs/core";
 @Module({
   imports: [
     ConfigModule,
@@ -22,24 +23,37 @@ import { UserModule } from "./components/user/user.module";
     CustomJwtModule,
     LogsModule,
     MailModule,
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          ttl: 60,
+          limit: 2,
+        },
+      ],
+    }),
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(RequestLoggerMiddleware).forRoutes("");
-    consumer
-      .apply(ProtectedRoutesMiddleware)
-      .exclude(
-        // @ts-ignore
-        { path: "authentication/login", method: "POST" },
-        { path: "authentication/register", method: "POST" },
-        { path: "user/mx", method: "POST" },
-        { path: "api/app-settings", method: "POST" },
-        { path: "lead/app-create", method: "POST" },
-        { path: "health", method: "GET" },
-      )
-      .forRoutes(""); // apply middleware for all other routes
+    // consumer
+    //   .apply(ProtectedRoutesMiddleware)
+    //   .exclude(
+    //     // @ts-ignore
+    //     { path: "authentication/login", method: "POST" },
+    //     { path: "authentication/register", method: "POST" },
+    //     { path: "user/mx", method: "POST" },
+    //     { path: "api/app-settings", method: "POST" },
+    //     { path: "lead/app-create", method: "POST" },
+    //     { path: "health", method: "GET" },
+    //   )
+    //   .forRoutes(""); // apply middleware for all other routes
   }
 }

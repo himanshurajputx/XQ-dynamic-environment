@@ -25,38 +25,15 @@ export function setup(app: INestApplication): INestApplication {
     }
 
     // 2️⃣ Enable security middlewares
-    app.use(
-      helmet({
-        contentSecurityPolicy: {
-          directives: {
-            defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-            styleSrc: ["'self'", "'unsafe-inline'"],
-            imgSrc: ["'self'", "data:", "validator.swagger.io"],
-            connectSrc: ["'self'", "http://localhost:4200"],
-          },
-        },
-        crossOriginEmbedderPolicy: false,
-      }),
-    );
+    app.use(helmet());
 
     app.use(compression());
     app.use(cookieParser(appSecret));
 
     // 3️⃣ CORS configuration
-    const allowedOrigins = configService
-      .get("ALLOWED_ORIGINS")
-      ?.split(/\s*,\s*/)
-      .filter(Boolean) || ["http://localhost:4200"];
 
     app.enableCors({
-      origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-          callback(null, true);
-        } else {
-          callback(new Error("Not allowed by CORS"));
-        }
-      },
+      origin: "http://localhost:4200",
       methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
       credentials: true,
       exposedHeaders: ["Authorization"],

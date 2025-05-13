@@ -61,11 +61,22 @@ export class LeadDto {
 
   @IsString()
   @IsNotEmpty()
+  pan: string;
+
+  @IsString()
+  @IsNotEmpty()
   dob: string;
 
   @IsString()
   @IsNotEmpty()
-  @IsEnum(["salaried", "self-employed", "others"])
+  @IsEnum([
+    "salaried",
+    "self-employed",
+    "others",
+    "retired",
+    "student",
+    "business",
+  ])
   employment_type: string;
 
   @IsString()
