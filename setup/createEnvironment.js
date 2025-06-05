@@ -26,7 +26,22 @@ function createEnvironment() {
   }
 }
 
-module.exports = { createEnvironment };
+// module.exports = { createEnvironment };
 
-// To call it:
-createEnvironment();
+
+
+function deleteEnvironment() {
+  const env = process.env.NODE_ENV?.trim() || 'development';
+  const folderName = 'environment';
+  fs.rmSync(folderName, { recursive: true, force: true });
+  console.log(`📁 Directory deleted at: ${folderName}`);
+}
+
+(function main() {
+  deleteEnvironment();
+  setTimeout(() => {
+    console.log('🔄 Recreating environment...');
+    createEnvironment();
+  }, 2000) // Wait 2 seconds before recreating
+
+})()

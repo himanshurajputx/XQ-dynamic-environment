@@ -1,3 +1,18 @@
+if [ -z "$NODE_ENV" ]; then
+  echo "NODE_ENV is not set"
+elif [ "$NODE_ENV" = "development" ]; then
+  echo "NODE_ENV is set to development"
+elif [ "$NODE_ENV" = "production" ]; then
+  echo "NODE_ENV is set to production"
+else
+  echo "NODE_ENV is set to an unknown value: $NODE_ENV"
+fi
+
+
+# This script automates the deployment of a NestJS application to a remote server.
+exit 0 # The script builds the application, zips the build files, and uploads them to the server.
+
+# It then SSHs into the server to unzip the files, install dependencies, and start the application using PM2.
 #!/bin/bash
 SERVER_IP="147.93.96.111"
 USER="root"
