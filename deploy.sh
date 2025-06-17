@@ -10,7 +10,7 @@ fi
 
 
 # This script automates the deployment of a NestJS application to a remote server.
-exit 0 # The script builds the application, zips the build files, and uploads them to the server.
+#exit 0 # The script builds the application, zips the build files, and uploads them to the server.
 
 # It then SSHs into the server to unzip the files, install dependencies, and start the application using PM2.
 #!/bin/bash
